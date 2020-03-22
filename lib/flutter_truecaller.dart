@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 
 import 'constants.dart';
 
-class FlutterTrueCaller {
+class FlutterTruecaller {
   static const MethodChannel _channel =
-  const MethodChannel('fluttertruecaller');
+      const MethodChannel('fluttertruecaller');
   static StreamController<String> _result = StreamController.broadcast();
 
   static Stream<String> get result => _result.stream;
@@ -26,9 +26,9 @@ class FlutterTrueCaller {
     return version;
   }
 
-  Future<String> get isUsable async {
-    final String version = await _channel.invokeMethod('isUsable');
-    return version;
+  Future<bool> get isUsable async {
+    final bool usable = await _channel.invokeMethod('isUsable');
+    return usable;
   }
 
   Future _setListener() async {
@@ -53,7 +53,7 @@ class FlutterTrueCaller {
     _setListener();
   }
 
-  Future<bool> verify(String mobile) async {
+  Future<bool> requestVerification(String mobile) async {
     _setListener();
     bool otpRequired = await _channel.invokeMethod("phone", mobile);
     return otpRequired;

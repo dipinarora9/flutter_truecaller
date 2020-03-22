@@ -4,7 +4,7 @@ import 'package:flutter_truecaller/flutter_truecaller.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('flutter_truecaller');
-  FlutterTrueCaller caller = FlutterTrueCaller();
+  FlutterTruecaller caller = FlutterTruecaller();
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {

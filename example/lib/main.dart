@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _result = 'Unknown';
-  final FlutterTrueCaller caller = FlutterTrueCaller();
+  final FlutterTruecaller caller = FlutterTruecaller();
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +47,14 @@ class _MyAppState extends State<MyApp> {
             ),
             OutlineButton(
               onPressed: () async {
-                String result;
+                bool isUsable;
                 try {
-                  result = await caller.isUsable;
+                  isUsable = await caller.isUsable;
                 } on PlatformException {
                   _result = 'Failed to get platform version.';
                 }
                 setState(() {
-                  _result = result;
+                  _result = isUsable ? "Usable" : "Not usable";
                 });
               },
               child: Text('is usable'),
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
               child: Text(_result ?? 'ERROR'),
             ),
             StreamBuilder<String>(
-              stream: FlutterTrueCaller.result,
+              stream: FlutterTruecaller.result,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
             OutlineButton(

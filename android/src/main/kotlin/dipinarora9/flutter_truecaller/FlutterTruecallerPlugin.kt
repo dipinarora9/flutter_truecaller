@@ -32,15 +32,6 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
         this.activity = activity
     }
 
-    // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-    // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-    // plugin registration via this function while apps migrate to use the new Android APIs
-    // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-    //
-    // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-    // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-    // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-    // in the same class.
     companion object {
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
@@ -59,13 +50,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                         .footerType(call.argument<Int>("footerType")!!)
                         .sdkOptions(call.argument<Int>("sdkOptions")!!)
                         .build()
-
                 TruecallerSDK.init(trueScope)
-                result.success("Truecaller sdk initialized")
+                result.success("Truecaller SDK initialized")
             }
             "isUsable" -> {
                 val usable: Boolean = TruecallerSDK.getInstance().isUsable
-                result.success("Android $usable")
+                result.success(usable)
             }
             "getProfile" -> {
                 TruecallerSDK.getInstance().getUserProfile((this.activity as FragmentActivity?)!!)
@@ -80,12 +70,11 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
     private val sdkCallback: ITrueCallback = object : ITrueCallback {
         override fun onSuccessProfileShared(trueProfile: TrueProfile) {
-
             // This method is invoked when either the truecaller app is installed on the device and the user gives his
             // consent to share his truecaller profile OR when the user has already been verified before on the same
             // device using the same number and hence does not need OTP to verify himself again.
             val item = JSONObject()
-            item.put("profile", trueProfile.toString())
+            item.put("profile", trueProfileToJson(trueProfile))
             item.put("message", "User verified without OTP")
             channel?.invokeMethod("callback", item.toString())
         }
@@ -99,10 +88,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             // This method is invoked when truecaller app is not present on the device or if the user wants to
             // continue with a different number and hence, missed call verification is required to complete the flow
             // You can initiate the missed call verification flow from within this callback method by using :
-//            channel?.setMethodCallHandler { call, result ->
-//
-//            }
-            channel!!.invokeMethod("callback", "please call verify method")
+            channel!!.invokeMethod("callback", "Please call manual verification method")
         }
     }
 
@@ -146,13 +132,13 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     }
                     VerificationCallback.TYPE_VERIFICATION_COMPLETE -> {
                         val item = JSONObject()
-                        item.put("profile", profile.toString())
+                        item.put("profile", trueProfileToJson(profile!!))
                         item.put("message", "User verified")
                         channel?.invokeMethod("callback", item.toString())
                     }
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
                         val item = JSONObject()
-                        item.put("profile", profile.toString())
+                        item.put("profile", trueProfileToJson(profile!!))
                         item.put("message", "User is already verified")
                         channel?.invokeMethod("callback", item.toString())
                     }
@@ -163,6 +149,37 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                 channel?.invokeMethod("callback", "${e.exceptionType} ${e.exceptionMessage}")
             }
         }
+    }
+
+    fun trueProfileToJson(profile: TrueProfile): JSONObject {
+        val item = JSONObject()
+        item.put("firstName", profile.firstName)
+        item.put("lastName", profile.lastName)
+        item.put("phoneNumber", profile.phoneNumber)
+        item.put("gender", profile.gender)
+        item.put("street", profile.street)
+        item.put("city", profile.city)
+        item.put("zipcode", profile.zipcode)
+        item.put("countryCode", profile.countryCode)
+        item.put("facebookId", profile.facebookId)
+        item.put("twitterId", profile.twitterId)
+        item.put("email", profile.email)
+        item.put("url", profile.url)
+        item.put("avatarUrl", profile.avatarUrl)
+        item.put("isTrueName", profile.isTrueName)
+        item.put("isAmbassador", profile.isAmbassador)
+        item.put("companyName", profile.companyName)
+        item.put("jobTitle", profile.jobTitle)
+        item.put("payload", profile.payload)
+        item.put("signature", profile.signature)
+        item.put("signatureAlgorithm", profile.signatureAlgorithm)
+        item.put("requestNonce", profile.requestNonce)
+        item.put("isSimChanged", profile.isSimChanged)
+        item.put("verificationMode", profile.verificationMode)
+        item.put("verificationTimestamp", profile.verificationTimestamp)
+        item.put("userLocale", profile.userLocale)
+        item.put("accessToken", profile.accessToken)
+        return item
     }
 
     fun verifyOTP(profile: TrueProfile, OTP: String) {
@@ -183,7 +200,6 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-
         activity = null
     }
 

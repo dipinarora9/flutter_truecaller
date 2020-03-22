@@ -16,7 +16,7 @@ class _VerifyState extends State<Verify> {
 
   final TextEditingController _otp = TextEditingController();
 
-  final FlutterTrueCaller caller = FlutterTrueCaller();
+  final FlutterTruecaller caller = FlutterTruecaller();
 
   bool otpRequired = false;
 
@@ -40,7 +40,7 @@ class _VerifyState extends State<Verify> {
             OutlineButton(
               onPressed: () async {
                 try {
-                  otpRequired = await caller.verify(_mobile.text);
+                  otpRequired = await caller.requestVerification(_mobile.text);
                 } on PlatformException {
                   debugPrint('ERROR');
                 }
@@ -87,7 +87,7 @@ class _VerifyState extends State<Verify> {
               child: Text("Submit"),
             ),
             StreamBuilder<String>(
-              stream: FlutterTrueCaller.result,
+              stream: FlutterTruecaller.result,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
           ],
