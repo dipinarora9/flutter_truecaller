@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_truecaller/constants.dart';
 import 'package:flutter_truecaller/flutter_truecaller.dart';
 
 import 'verify_non_truecaller.dart';
@@ -24,21 +24,21 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('Truecaller Plugin Example'),
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             OutlineButton(
               onPressed: () async {
-                String result;
-                try {
-                  result = await caller.initializeSDK();
-                } on PlatformException {
-                  _result = 'Failed to get platform version.';
-                }
+                String result = await caller.initializeSDK(
+                  sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITHOUT_OTP,
+                  footerType: FlutterTruecallerScope.FOOTER_TYPE_ANOTHER_METHOD,
+                  consentTitleOptions:
+                      FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
+                  consentMode: FlutterTruecallerScope.CONSENT_MODE_POPUP,
+                );
                 setState(() {
                   _result = result;
                 });
@@ -47,27 +47,35 @@ class _MyAppState extends State<MyApp> {
             ),
             OutlineButton(
               onPressed: () async {
-                bool isUsable;
-                try {
-                  isUsable = await caller.isUsable;
-                } on PlatformException {
-                  _result = 'Failed to get platform version.';
-                }
+                bool isUsable = await caller.isUsable;
                 setState(() {
                   _result = isUsable ? "Usable" : "Not usable";
                 });
               },
-              child: Text('is usable'),
+              child: Text('Is usable?'),
             ),
             OutlineButton(
               onPressed: () async {
-                try {
-                  caller.getProfile();
-                } on PlatformException {
-                  _result = 'Failed to get platform version.';
-                }
+                String result = await caller.setLocale(Locales.Hindi);
+                setState(() {
+                  _result = result;
+                });
               },
-              child: Text('get profile'),
+              child: Text('Change Locale'),
+            ),
+            OutlineButton(
+              onPressed: () async {
+                await caller.getProfile();
+                FlutterTruecaller.verificationRequired.listen((required) {
+                  if (required)
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Verify(),
+                      ),
+                    );
+                });
+              },
+              child: Text('Get Profile'),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -77,13 +85,10 @@ class _MyAppState extends State<MyApp> {
               stream: FlutterTruecaller.result,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
-            OutlineButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => Verify(),
-                ),
-              ),
-              child: Text("Go to verify screen"),
+            StreamBuilder<TruecallerProfile>(
+              stream: FlutterTruecaller.profile,
+              builder: (context, snapshot) =>
+                  Text(snapshot.hasData ? snapshot.data.firstName : ''),
             ),
           ],
         ),

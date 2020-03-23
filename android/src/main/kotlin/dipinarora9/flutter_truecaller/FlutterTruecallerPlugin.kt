@@ -2,7 +2,7 @@ package dipinarora9.flutter_truecaller
 
 import android.app.Activity
 import android.util.Log
-import androidx.annotation.NonNull;
+import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.fragment.app.FragmentActivity
 import com.truecaller.android.sdk.*
@@ -17,11 +17,14 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import org.json.JSONObject
+import java.util.*
+
 
 /** FlutterTruecallerPlugin */
 public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var channel: MethodChannel? = null
     private var activity: Activity? = null
+    private var initialized: Boolean = false
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fluttertruecaller")
@@ -44,26 +47,65 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "initialize" -> {
-                val trueScope = TruecallerSdkScope.Builder(this.activity!!.applicationContext, sdkCallback)
-                        .consentMode(call.argument<Int>("consentMode")!!)
-                        .consentTitleOption(call.argument<Int>("consentTitleOptions")!!)
-                        .footerType(call.argument<Int>("footerType")!!)
-                        .sdkOptions(call.argument<Int>("sdkOptions")!!)
-                        .build()
-                TruecallerSDK.init(trueScope)
-                result.success("Truecaller SDK initialized")
+                try {
+                    if (!initialized) {
+                        val trueScope = TruecallerSdkScope.Builder(this.activity!!.applicationContext, sdkCallback)
+                                .consentMode(call.argument<Int>("consentMode")!!)
+                                .consentTitleOption(call.argument<Int>("consentTitleOptions")!!)
+                                .footerType(call.argument<Int>("footerType")!!)
+                                .sdkOptions(call.argument<Int>("sdkOptions")!!)
+                                .build()
+                        TruecallerSDK.init(trueScope)
+                        initialized = true
+                        result.success("Truecaller SDK initialized")
+                    } else result.success("Truecaller SDK already initialized")
+                } catch (e: Exception) {
+                    result.error("FAILED", e.message, null)
+                }
+            }
+            "setLocale" -> {
+                try {
+                    if (initialized) {
+                        val locale = Locale(call.arguments.toString())
+                        TruecallerSDK.getInstance().setLocale(locale)
+                        result.success("Locale set to ${call.arguments}")
+                    } else result.success("Truecaller SDK not initialized")
+                } catch (e: Exception) {
+                    result.error("FAILED", e.message, null)
+                }
             }
             "isUsable" -> {
-                val usable: Boolean = TruecallerSDK.getInstance().isUsable
-                result.success(usable)
+                try {
+                    if (initialized) {
+                        val usable: Boolean = TruecallerSDK.getInstance().isUsable
+                        result.success(usable)
+                    } else
+                        result.error("ERROR", "Truecaller SDK not initialized", false)
+                } catch (e: Exception) {
+                    result.error("FAILED", e.message, null)
+                }
             }
             "getProfile" -> {
-                TruecallerSDK.getInstance().getUserProfile((this.activity as FragmentActivity?)!!)
-                result.success("")
+                try {
+                    if (initialized) {
+                        TruecallerSDK.getInstance().getUserProfile((this.activity as FragmentActivity?)!!)
+                        result.success("")
+                    } else
+                        result.error("ERROR", "Truecaller SDK not initialized", false)
+                } catch (e: Exception) {
+                    result.error("FAILED", e.message, null)
+                }
             }
             "phone" -> {
-                TruecallerSDK.getInstance().requestVerification("IN", call
-                        .arguments.toString(), getCallBack(result), (activity as FragmentActivity?)!!)
+                try {
+                    if (initialized) {
+                        TruecallerSDK.getInstance().requestVerification("IN", call
+                                .arguments.toString(), getCallBack(result), (activity as FragmentActivity?)!!)
+                    } else
+                        result.error("ERROR", "Truecaller SDK not initialized", false)
+                } catch (e: Exception) {
+                    result.error("FAILED", e.message, null)
+                }
             }
         }
     }
@@ -73,21 +115,23 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             // This method is invoked when either the truecaller app is installed on the device and the user gives his
             // consent to share his truecaller profile OR when the user has already been verified before on the same
             // device using the same number and hence does not need OTP to verify himself again.
-            val item = JSONObject()
-            item.put("profile", trueProfileToJson(trueProfile))
-            item.put("message", "User verified without OTP")
-            channel?.invokeMethod("callback", item.toString())
+            channel?.invokeMethod("profile", trueProfileToJson(trueProfile, "User verified without OTP").toString())
+            channel?.invokeMethod("verificationRequired", false)
         }
 
         override fun onFailureProfileShared(trueError: TrueError) {
             // This method is invoked when some error occurs or if an invalid request for verification is made
-            channel!!.invokeMethod("callback", "onFailureProfileShared: " + trueError.errorType)
+            channel?.invokeMethod("callback", trueError.errorType.toString())
+            channel?.invokeMethod("verificationRequired", false)
+            Log.d("truecaller-testing", "onFailureProfileShared: " + trueError.errorType)
         }
 
         override fun onVerificationRequired() {
             // This method is invoked when truecaller app is not present on the device or if the user wants to
             // continue with a different number and hence, missed call verification is required to complete the flow
             // You can initiate the missed call verification flow from within this callback method by using :
+            Log.d("truecaller-testing", "Please call manual verification method")
+            channel!!.invokeMethod("verificationRequired", true)
             channel!!.invokeMethod("callback", "Please call manual verification method")
         }
     }
@@ -131,16 +175,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 //                    channel?.invokeMethod("callback", "OTP is successfully detected")
                     }
                     VerificationCallback.TYPE_VERIFICATION_COMPLETE -> {
-                        val item = JSONObject()
-                        item.put("profile", trueProfileToJson(profile!!))
-                        item.put("message", "User verified")
-                        channel?.invokeMethod("callback", item.toString())
+                        channel?.invokeMethod("callback", "User verified")
+                        channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
                     }
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
-                        val item = JSONObject()
-                        item.put("profile", trueProfileToJson(profile!!))
-                        item.put("message", "User is already verified")
-                        channel?.invokeMethod("callback", item.toString())
+                        channel?.invokeMethod("callback", "User already verified")
+                        channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
                     }
                 }
             }
@@ -151,7 +191,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
         }
     }
 
-    fun trueProfileToJson(profile: TrueProfile): JSONObject {
+    fun trueProfileToJson(profile: TrueProfile, verificationMode: String): JSONObject {
         val item = JSONObject()
         item.put("firstName", profile.firstName)
         item.put("lastName", profile.lastName)
@@ -175,7 +215,10 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
         item.put("signatureAlgorithm", profile.signatureAlgorithm)
         item.put("requestNonce", profile.requestNonce)
         item.put("isSimChanged", profile.isSimChanged)
-        item.put("verificationMode", profile.verificationMode)
+        if (profile.verificationMode != null)
+            item.put("verificationMode", profile.verificationMode)
+        else
+            item.put("verificationMode", verificationMode)
         item.put("verificationTimestamp", profile.verificationTimestamp)
         item.put("userLocale", profile.userLocale)
         item.put("accessToken", profile.accessToken)

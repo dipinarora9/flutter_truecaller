@@ -20,10 +20,15 @@ Open your AndroidManifest.xml and add a meta-data element to the application ele
 ```
 Check out the AndroidManifest.xml in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/AndroidManifest.xml).
 
-### 3a. Verification flow (Supported Globally)
+### 3. For truecaller popup
+Note that flutter_truecaller plugin requires the use of a FragmentActivity as opposed to Activity. This can be easily done by switching to use `FlutterFragmentActivity` as opposed to `FlutterActivity` in your MainActivity (or your own Activity class if you are extending the base class).
+
+Check out the MainActivity in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/kotlin/dipinarora9/flutter_truecaller_example/MainActivity.kt).
+
+### 4a. Verification flow (Supported Globally)
 
 ![Verification Flow](https://raw.githubusercontent.com/dipinarora9/flutter_truecaller/master/verification.png)
-### 3b. Verifying non-truecaller users (Currently available only for India)
+### 4b. Verifying non-truecaller users (Currently available only for India)
 In order to verify non Truecaller users, the SDK requires the below mentioned permissions in your AndroidManifest.xml.
 
 _Check out the AndroidManifest.xml in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/AndroidManifest.xml)._
@@ -42,6 +47,7 @@ Add the following imports to your Dart code:
 
 ```dart
 import 'package:flutter_truecaller/flutter_truecaller.dart';
+import 'package:flutter_truecaller/constants.dart';
 ```
 
 Initialize  `TruecallerSDK` :
@@ -77,21 +83,45 @@ Check if the Truecaller app is present on the user's device or not by using the 
 ```dart
 bool result = await caller.isUsable;
 ```
+You can change the locale for the truecaller overlay using the `setLocale` method.
+```dart
+caller.setLocale(Locales.Hindi);
+```
 You can trigger the Truecaller profile verification dialog anywhere in your app flow by calling the following method.
 ```dart
 caller.getProfile();
+
+/*
+If you are integrating for both truecaller and non-truecaller users
+then you can listen to the "verificationRequired" stream which returns false or true based on the scenerio if truecaller app is present or not.
+So that you can show different UI.
+*/
+FlutterTruecaller.verificationRequired.listen((required) {    
+	if (required)  
+		Navigator.of(context).push(  
+			MaterialPageRoute(  
+				builder: (_) => Verify(),  
+			),  
+		);  
+	else 
+		print("Verification automatically done via truecaller overlay");
+});
 ```
 
 >a.) When the user has agreed to share his profile information with your app by clicking on the "Continue" button on the Truecaller dialog
 b.) When a non Truecaller user is already verified previously on the same device. This would only happen when the ``TruecallerSdkScope#SDK_OPTION_WITH_OTP`` is selected while initialising the SDK to provision for the verification of non-Truecaller users also.
 
+Truecaller profiles are returned in the `profile` stream.
+```dart
+FlutterTruecaller.profile;
+```
+### For verifying non-truecaller users
 You can initiate the verification for the user by calling the `requestVerification` method which initiates the verification and returns a boolean value which tells us that if the verification method initiated by truecaller is either a missed call method or an OTP based method.
 ```dart
 /* 
 If otpRequired is true then OTP based verification is initiated
 if false then missed call verification is initiated
 */
-
 bool otpRequired = await caller.requestVerification("PHONE_NUMBER_HERE");
 ```
 >There is no option in the truecallerSDK to specify which verification method to use. It decides it on its own. Use the boolean value returned to change your UI as needed.
@@ -116,6 +146,7 @@ else
 |5|Truecaller App Internal Error|
 |13|User pressed back while verification in process|
 |14 |User pressed "SKIP / USE ANOTHER NUMBER"|
+
 **_Error Type 4_** _and_ **_Error Type 10_** _could arise in different conditions depending on whether the user has not registered on Truecaller app on their smartphone_ **_or_** _if the user has deactivated their Truecaller profile at any point of time from the app._
 
 >Scenerios when verifying non-truecaller users.

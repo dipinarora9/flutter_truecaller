@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_truecaller/constants.dart';
 import 'package:flutter_truecaller/flutter_truecaller.dart';
 
 class Verify extends StatefulWidget {
@@ -39,11 +40,7 @@ class _VerifyState extends State<Verify> {
             ),
             OutlineButton(
               onPressed: () async {
-                try {
-                  otpRequired = await caller.requestVerification(_mobile.text);
-                } on PlatformException {
-                  debugPrint('ERROR');
-                }
+                otpRequired = await caller.requestVerification(_mobile.text);
                 setState(() {});
               },
               child: Text("Verify"),
@@ -73,22 +70,19 @@ class _VerifyState extends State<Verify> {
               ),
             OutlineButton(
               onPressed: () async {
-                try {
-                  if (otpRequired)
-                    await caller.profileWithOTP(
-                        _firstName.text, _lastName.text, _otp.text);
-                  else
-                    await caller.profileWithoutOTP(
-                        _firstName.text, _lastName.text);
-                } on PlatformException {
-                  debugPrint('ERROR');
-                }
+                if (otpRequired)
+                  await caller.profileWithOTP(
+                      _firstName.text, _lastName.text, _otp.text);
+                else
+                  await caller.profileWithoutOTP(
+                      _firstName.text, _lastName.text);
               },
               child: Text("Submit"),
             ),
-            StreamBuilder<String>(
-              stream: FlutterTruecaller.result,
-              builder: (context, snapshot) => Text(snapshot.data ?? ''),
+            StreamBuilder<TruecallerProfile>(
+              stream: FlutterTruecaller.profile,
+              builder: (context, snapshot) =>
+                  Text(snapshot.hasData ? snapshot.data.firstName : ''),
             ),
           ],
         ),
