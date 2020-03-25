@@ -32,7 +32,6 @@ class _MyAppState extends State<MyApp> {
             OutlineButton(
               onPressed: () async {
                 String result = await caller.initializeSDK(
-                  sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITHOUT_OTP,
                   footerType: FlutterTruecallerScope.FOOTER_TYPE_ANOTHER_METHOD,
                   consentTitleOptions:
                       FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
@@ -66,7 +65,7 @@ class _MyAppState extends State<MyApp> {
             OutlineButton(
               onPressed: () async {
                 await caller.getProfile();
-                FlutterTruecaller.verificationRequired.listen((required) {
+                FlutterTruecaller.manualVerificationRequired.listen((required) {
                   if (required)
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -86,11 +85,11 @@ class _MyAppState extends State<MyApp> {
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
             StreamBuilder<String>(
-              stream: FlutterTruecaller.error,
+              stream: FlutterTruecaller.errors,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
             StreamBuilder<TruecallerProfile>(
-              stream: FlutterTruecaller.profile,
+              stream: FlutterTruecaller.trueProfile,
               builder: (context, snapshot) =>
                   Text(snapshot.hasData ? snapshot.data.firstName : ''),
             ),

@@ -70,16 +70,16 @@ class _VerifyState extends State<Verify> {
             OutlineButton(
               onPressed: () async {
                 if (otpRequired)
-                  await caller.profileWithOTP(
+                  await caller.verifyOtp(
                       _firstName.text, _lastName.text, _otp.text);
                 else
-                  await caller.profileWithoutOTP(
+                  await caller.verifyMissedCall(
                       _firstName.text, _lastName.text);
               },
               child: Text("Submit"),
             ),
             StreamBuilder<TruecallerProfile>(
-              stream: FlutterTruecaller.profile,
+              stream: FlutterTruecaller.trueProfile,
               builder: (context, snapshot) =>
                   Text(snapshot.hasData ? snapshot.data.firstName : ''),
             ),

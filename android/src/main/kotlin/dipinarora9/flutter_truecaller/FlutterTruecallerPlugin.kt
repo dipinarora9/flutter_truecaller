@@ -26,7 +26,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     private var initialized: Boolean = false
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "fluttertruecaller")
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_truecaller")
     }
 
     constructor()
@@ -37,7 +37,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     companion object {
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "fluttertruecaller")
+            val channel = MethodChannel(registrar.messenger(), "flutter_truecaller")
             channel.setMethodCallHandler(FlutterTruecallerPlugin(registrar.activity()))
         }
     }

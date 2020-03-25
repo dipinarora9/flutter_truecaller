@@ -1,5 +1,38 @@
 import 'dart:convert' show json;
 
+/// Truecaller SDK provides you with capabilities to configure the following :
+///
+/// Consent Mode
+/// To switch between a full screen view or an overlay view of the truecaller profile verification view
+///
+/// To display the user's Truecaller profile in a popup view :
+/// TruecallerSdkScope.CONSENT_MODE_POPUP
+/// To display the user's Truecaller profile in a full screen view :
+/// TruecallerSdkScope.CONSENT_MODE_FULLSCREEN
+///
+/// Footer Type
+/// To configure the text of the additional CTA present at the bottom
+///
+/// To show "USE ANOTHER MOBILE NUMBER" as the bottom :
+/// TruecallerSdkScope.FOOTER_TYPE_CONTINUE
+/// To show "SKIP" at the bottom :
+/// TruecallerSdkScope.FOOTER_TYPE_SKIP
+///
+/// Consent Title Options
+/// To provide appropriate context of verification to the truecaller user
+///
+/// To show "Login" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_LOG_IN
+/// To show "Signup" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_SIGN_UP
+/// To show "Sign In" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_SIGN_IN
+/// To show "Verify" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY
+/// To show "Register" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_REGISTER
+/// To show "Get Started" as the contextual text in the title of the user profile view :
+/// TruecallerSdkScope.SDK_CONSENT_TITLE_GET_STARTED
 class FlutterTruecallerScope {
   static const int CONSENT_MODE_POPUP = 4;
   static const int CONSENT_MODE_FULLSCREEN = 8;
@@ -20,6 +53,7 @@ class FlutterTruecallerScope {
   static const int SDK_CONSENT_TITLE_GET_STARTED = 5;
 }
 
+/// To customise the profile dialog in any of the supported Indian language
 class FlutterTruecallerLocales {
   static const String English = "en";
   static const String Hindi = "hi";
@@ -86,6 +120,7 @@ String errorString(int raw) {
   }
 }
 
+/// Truecaller profile data type
 class TruecallerProfile {
   String _firstName;
   String _lastName;
@@ -166,6 +201,7 @@ class TruecallerProfile {
 
   String get accessToken => _accessToken;
 
+  /// Profile in the form of map
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map();
     map["firstName"] = _firstName;
@@ -197,6 +233,7 @@ class TruecallerProfile {
     return map;
   }
 
+  /// Profile from map object
   TruecallerProfile.fromMap(Map<String, dynamic> map) {
     _firstName = map["firstName"];
     _lastName = map["lastName"];
@@ -226,6 +263,7 @@ class TruecallerProfile {
     _accessToken = map["accessToken"];
   }
 
+  /// To get Truecaller Profile as json string
   toString() {
     Map<String, dynamic> map = Map();
     map["firstName"] = _firstName;
