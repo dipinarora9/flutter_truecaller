@@ -1,4 +1,5 @@
 
+  
 # flutter_truecaller
 [Truecaller SDK](https://docs.truecaller.com/truecaller-sdk/v/2.0/) plugin for Flutter applications.
 
@@ -14,13 +15,15 @@ Open your AndroidManifest.xml and add a meta-data element to the application ele
 ```xml
 <application ...>
 ...
+<activity ...>
+.. </activity>
 <meta-data android:name="com.truecaller.android.sdk.PartnerKey" android:value="YOUR_PARTNER_KEY_HERE"/>
 ...
 </application>
 ```
 Check out the AndroidManifest.xml in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/AndroidManifest.xml).
 
-### 3. For truecaller popup
+### 3. For Truecaller Overlay
 Note that flutter_truecaller plugin requires the use of a FragmentActivity as opposed to Activity. This can be easily done by switching to use `FlutterFragmentActivity` as opposed to `FlutterActivity` in your MainActivity (or your own Activity class if you are extending the base class).
 
 Check out the MainActivity in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/kotlin/dipinarora9/flutter_truecaller_example/MainActivity.kt).
@@ -47,7 +50,6 @@ Add the following imports to your Dart code:
 
 ```dart
 import 'package:flutter_truecaller/flutter_truecaller.dart';
-import 'package:flutter_truecaller/constants.dart';
 ```
 
 Initialize  `TruecallerSDK` :
@@ -85,7 +87,7 @@ bool result = await caller.isUsable;
 ```
 You can change the locale for the truecaller overlay using the `setLocale` method.
 ```dart
-caller.setLocale(Locales.Hindi);
+caller.setLocale(FlutterTruecallerLocales.Hindi);
 ```
 You can trigger the Truecaller profile verification dialog anywhere in your app flow by calling the following method.
 ```dart
@@ -133,8 +135,9 @@ if(otpRequired)
 else
 	caller.profileWithoutOTP(String firstName, String lastName);
 ```
-#### All the results are returned in `FlutterTruecaller.result` stream.
+#### Most debugging results are returned in `FlutterTruecaller.callback` stream.
 
+#### All the errors are returned in `FlutterTruecaller.error` stream.
 
 ## Error Codes
 | Error Code  | What it means  |

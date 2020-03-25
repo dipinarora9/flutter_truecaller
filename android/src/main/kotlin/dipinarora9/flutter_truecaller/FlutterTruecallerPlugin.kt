@@ -1,7 +1,6 @@
 package dipinarora9.flutter_truecaller
 
 import android.app.Activity
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.fragment.app.FragmentActivity
@@ -60,6 +59,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                         result.success("Truecaller SDK initialized")
                     } else result.success("Truecaller SDK already initialized")
                 } catch (e: Exception) {
+                    initialized = false
                     result.error("FAILED", e.message, null)
                 }
             }
@@ -115,22 +115,23 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             // This method is invoked when either the truecaller app is installed on the device and the user gives his
             // consent to share his truecaller profile OR when the user has already been verified before on the same
             // device using the same number and hence does not need OTP to verify himself again.
+            channel?.invokeMethod("callback", "User verified without OTP")
             channel?.invokeMethod("profile", trueProfileToJson(trueProfile, "User verified without OTP").toString())
             channel?.invokeMethod("verificationRequired", false)
         }
 
         override fun onFailureProfileShared(trueError: TrueError) {
             // This method is invoked when some error occurs or if an invalid request for verification is made
-            channel?.invokeMethod("callback", trueError.errorType.toString())
+            channel?.invokeMethod("error", trueError.errorType.toString())
             channel?.invokeMethod("verificationRequired", false)
-            Log.d("truecaller-testing", "onFailureProfileShared: " + trueError.errorType)
+//            Log.d("truecaller-testing", "onFailureProfileShared: " + trueError.errorType)
         }
 
         override fun onVerificationRequired() {
             // This method is invoked when truecaller app is not present on the device or if the user wants to
             // continue with a different number and hence, missed call verification is required to complete the flow
             // You can initiate the missed call verification flow from within this callback method by using :
-            Log.d("truecaller-testing", "Please call manual verification method")
+//            Log.d("truecaller-testing", "Please call manual verification method")
             channel!!.invokeMethod("verificationRequired", true)
             channel!!.invokeMethod("callback", "Please call manual verification method")
         }
@@ -142,12 +143,13 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
                 when (requestCode) {
                     VerificationCallback.TYPE_MISSED_CALL_INITIATED -> {
-                        Log.d("truecaller-testing", "drop call is successfully initiated")
+//                        Log.d("truecaller-testing", "drop call is successfully initiated")
                         result?.success(false)
+                        channel?.invokeMethod("callback", "drop call is successfully initiated")
                     }
                     VerificationCallback.TYPE_MISSED_CALL_RECEIVED -> {
-                        Log.d("truecaller-testing", "drop call is successfully detected")
-                        channel?.setMethodCallHandler { call, result ->
+//                        Log.d("truecaller-testing", "drop call is successfully detected")
+                        channel?.setMethodCallHandler { call, _ ->
                             if (call.method == "verifyMissCall") {
                                 val userProfile = TrueProfile.Builder(call
                                         .argument("firstName")!!, call
@@ -155,15 +157,16 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                                 verifyMissedCall(userProfile)
                             }
                         }
-//                    channel?.invokeMethod("callback", "drop call is successfully detected")
+                        channel?.invokeMethod("callback", "drop call is successfully detected")
                     }
                     VerificationCallback.TYPE_OTP_INITIATED -> {
-                        Log.d("truecaller-testing", "drop call is successfully initiated")
+//                        Log.d("truecaller-testing", "OTP is successfully triggered")
                         result?.success(true)
+                        channel?.invokeMethod("callback", "OTP is successfully triggered")
                     }
                     VerificationCallback.TYPE_OTP_RECEIVED -> {
-                        Log.d("truecaller-testing", "OTP is successfully detected")
-                        channel?.setMethodCallHandler { call, result ->
+//                        Log.d("truecaller-testing", "OTP is successfully detected")
+                        channel?.setMethodCallHandler { call, _ ->
                             if (call.method == "verifyOTP") {
                                 val userProfile = TrueProfile.Builder(call
                                         .argument("firstName")!!, call
@@ -172,21 +175,21 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                                         .argument("otp")!!)
                             }
                         }
-//                    channel?.invokeMethod("callback", "OTP is successfully detected")
+                        channel?.invokeMethod("callback", "OTP is successfully detected")
                     }
                     VerificationCallback.TYPE_VERIFICATION_COMPLETE -> {
-                        channel?.invokeMethod("callback", "User verified")
                         channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
+                        channel?.invokeMethod("callback", "User verified")
                     }
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
-                        channel?.invokeMethod("callback", "User already verified")
                         channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
+                        channel?.invokeMethod("callback", "User already verified")
                     }
                 }
             }
 
             override fun onRequestFailure(requestCode: Int, e: TrueException) {
-                channel?.invokeMethod("callback", "${e.exceptionType} ${e.exceptionMessage}")
+                channel?.invokeMethod("error", e.exceptionMessage)
             }
         }
     }
@@ -238,7 +241,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addActivityResultListener { _, i2, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, i2, intent) }
+        binding.addActivityResultListener { _, resultCode, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) }
         channel?.setMethodCallHandler(this)
     }
 
@@ -248,7 +251,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addActivityResultListener { _, i2, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, i2, intent) }
+        binding.addActivityResultListener { _, resultCode, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) }
     }
 
 

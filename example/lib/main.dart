@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_truecaller/constants.dart';
 import 'package:flutter_truecaller/flutter_truecaller.dart';
 
 import 'verify_non_truecaller.dart';
@@ -56,7 +55,8 @@ class _MyAppState extends State<MyApp> {
             ),
             OutlineButton(
               onPressed: () async {
-                String result = await caller.setLocale(Locales.Hindi);
+                String result =
+                    await caller.setLocale(FlutterTruecallerLocales.Hindi);
                 setState(() {
                   _result = result;
                 });
@@ -82,7 +82,11 @@ class _MyAppState extends State<MyApp> {
               child: Text(_result ?? 'ERROR'),
             ),
             StreamBuilder<String>(
-              stream: FlutterTruecaller.result,
+              stream: FlutterTruecaller.callback,
+              builder: (context, snapshot) => Text(snapshot.data ?? ''),
+            ),
+            StreamBuilder<String>(
+              stream: FlutterTruecaller.error,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
             StreamBuilder<TruecallerProfile>(
