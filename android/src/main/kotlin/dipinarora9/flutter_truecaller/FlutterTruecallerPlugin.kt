@@ -182,14 +182,17 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                         channel?.invokeMethod("callback", "User verified")
                     }
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
-                        channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
+                        channel?.invokeMethod("profile", trueProfileToJson(extras?.profile!!, "").toString())
                         channel?.invokeMethod("callback", "User already verified")
                     }
                 }
             }
 
             override fun onRequestFailure(requestCode: Int, e: TrueException) {
-                channel?.invokeMethod("error", e.exceptionMessage)
+                val item = JSONObject()
+                item.put("code", e.exceptionType)
+                item.put("message", e.exceptionMessage)
+                channel?.invokeMethod("error", item.toString())
             }
         }
     }

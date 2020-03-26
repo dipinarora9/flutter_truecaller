@@ -84,9 +84,9 @@ class _MyAppState extends State<MyApp> {
               stream: FlutterTruecaller.callback,
               builder: (context, snapshot) => Text(snapshot.data ?? ''),
             ),
-            StreamBuilder<String>(
+            StreamBuilder<FlutterTruecallerException>(
               stream: FlutterTruecaller.errors,
-              builder: (context, snapshot) => Text(snapshot.data ?? ''),
+              builder: (context, snapshot) => Text(snapshot.data.errorMessage ?? ''),
             ),
             StreamBuilder<TruecallerProfile>(
               stream: FlutterTruecaller.trueProfile,

@@ -1,8 +1,8 @@
 name: flutter_truecaller
 description: |
   Truecaller SDK plugin for Flutter apps. Verification via this plugin
-  enables you to quickly verify/signup/login your users on the basis of their mobile number
-version: 0.1.0
+  enables you to quickly verify / signup / login your users on the basis of their mobile number
+version: 0.2.0
 homepage: https://github.com/dipinarora9/flutter_truecaller
 
 environment:

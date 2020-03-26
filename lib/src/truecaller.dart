@@ -20,7 +20,8 @@ class FlutterTruecaller {
   static const MethodChannel _channel =
       const MethodChannel('flutter_truecaller');
   static StreamController<String> _callback = StreamController.broadcast();
-  static StreamController<String> _errors = StreamController.broadcast();
+  static StreamController<FlutterTruecallerException> _errors =
+      StreamController.broadcast();
   static StreamController<bool> _manualVerificationRequired =
       StreamController.broadcast();
   static StreamController<TruecallerProfile> _profileStream =
@@ -30,7 +31,10 @@ class FlutterTruecaller {
   static Stream<String> get callback => _callback.stream;
 
   /// Stream to receive errors from the Truecaller SDK
-  static Stream<String> get errors => _errors.stream;
+  /// Errors are of type FlutterTruecallerException
+  ///
+  /// They have two getter - error code, error message
+  static Stream<FlutterTruecallerException> get errors => _errors.stream;
 
   /// Stream to receive boolean to know if manual verification is required
   static Stream<bool> get manualVerificationRequired =>
@@ -117,9 +121,11 @@ class FlutterTruecaller {
           break;
         case "error":
           if (int.tryParse(call.arguments) != null)
-            _errors.add(errorString(int.parse(call.arguments)));
+            _errors.add(FlutterTruecallerException(int.parse(call.arguments),
+                errorString(int.parse(call.arguments))));
           else
-            _errors.add(call.arguments.toString());
+            _errors.add(FlutterTruecallerException.fromMap(
+                json.decode(call.arguments.toString())));
           break;
         case "verificationRequired":
           _manualVerificationRequired.add(call.arguments);

@@ -68,6 +68,33 @@ class FlutterTruecallerLocales {
   static const String Swahili = "sw";
 }
 
+/// FlutterTruecallerException class is used to contain errors from Truecaller SDK
+///
+/// FlutterTruecallerException has two getters - errorMessage and errorCode
+class FlutterTruecallerException {
+  int _code;
+  String _message;
+
+  int get errorCode => _code;
+
+  String get errorMessage => _message;
+
+  FlutterTruecallerException(this._code, this._message);
+
+  FlutterTruecallerException.fromMap(Map<String, dynamic> map) {
+    _code = map['code'];
+    _message = map['message'];
+  }
+
+  @override
+  String toString() {
+    Map<String, dynamic> map = Map();
+    map['code'] = _code;
+    map['message'] = _message;
+    return map.toString();
+  }
+}
+
 String errorString(int raw) {
   switch (raw) {
     case 0:

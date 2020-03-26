@@ -1,3 +1,6 @@
+## 0.2.0
+* Plugin ready for production use
+
 ## 0.1.0
 * Added api documentation
 
