@@ -78,6 +78,15 @@ class _VerifyState extends State<Verify> {
               },
               child: Text("Submit"),
             ),
+            StreamBuilder<String>(
+              stream: FlutterTruecaller.callback,
+              builder: (context, snapshot) => Text(snapshot.data ?? ''),
+            ),
+            StreamBuilder<FlutterTruecallerException>(
+              stream: FlutterTruecaller.errors,
+              builder: (context, snapshot) =>
+                  Text(snapshot.hasData ? snapshot.data.errorMessage : ''),
+            ),
             StreamBuilder<TruecallerProfile>(
               stream: FlutterTruecaller.trueProfile,
               builder: (context, snapshot) =>

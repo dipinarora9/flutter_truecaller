@@ -1,3 +1,6 @@
+## 0.2.0+1
+* Updated example app
+
 ## 0.2.0
 * Plugin ready for production use
 

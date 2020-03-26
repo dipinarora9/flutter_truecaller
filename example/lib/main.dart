@@ -32,6 +32,7 @@ class _MyAppState extends State<MyApp> {
             OutlineButton(
               onPressed: () async {
                 String result = await caller.initializeSDK(
+                  sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITH_OTP,
                   footerType: FlutterTruecallerScope.FOOTER_TYPE_ANOTHER_METHOD,
                   consentTitleOptions:
                       FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
@@ -86,7 +87,8 @@ class _MyAppState extends State<MyApp> {
             ),
             StreamBuilder<FlutterTruecallerException>(
               stream: FlutterTruecaller.errors,
-              builder: (context, snapshot) => Text(snapshot.data.errorMessage ?? ''),
+              builder: (context, snapshot) =>
+                  Text(snapshot.hasData ? snapshot.data.errorMessage : ''),
             ),
             StreamBuilder<TruecallerProfile>(
               stream: FlutterTruecaller.trueProfile,

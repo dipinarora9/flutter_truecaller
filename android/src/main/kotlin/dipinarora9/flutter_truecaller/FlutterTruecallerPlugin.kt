@@ -149,11 +149,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     }
                     VerificationCallback.TYPE_MISSED_CALL_RECEIVED -> {
 //                        Log.d("truecaller-testing", "drop call is successfully detected")
-                        channel?.setMethodCallHandler { call, _ ->
+                        channel?.setMethodCallHandler { call, result ->
                             if (call.method == "verifyMissCall") {
                                 val userProfile = TrueProfile.Builder(call
                                         .argument("firstName")!!, call
                                         .argument("lastName")!!).build()
+                                result.success("")
                                 verifyMissedCall(userProfile)
                             }
                         }
@@ -166,11 +167,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     }
                     VerificationCallback.TYPE_OTP_RECEIVED -> {
 //                        Log.d("truecaller-testing", "OTP is successfully detected")
-                        channel?.setMethodCallHandler { call, _ ->
+                        channel?.setMethodCallHandler { call, result ->
                             if (call.method == "verifyOTP") {
                                 val userProfile = TrueProfile.Builder(call
                                         .argument("firstName")!!, call
                                         .argument("lastName")!!).build()
+                                result.success("")
                                 verifyOTP(userProfile, call
                                         .argument("otp")!!)
                             }
@@ -184,6 +186,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
                         channel?.invokeMethod("profile", trueProfileToJson(extras?.profile!!, "").toString())
                         channel?.invokeMethod("callback", "User already verified")
+                        result?.success(false)
                     }
                 }
             }
