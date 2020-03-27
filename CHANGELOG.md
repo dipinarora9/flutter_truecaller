@@ -1,3 +1,6 @@
+## 0.2.0+2
+* Fixed a typo and improved documentation
+
 ## 0.2.0+1
 * Updated example app
 

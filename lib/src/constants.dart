@@ -107,7 +107,7 @@ String errorString(int raw) {
       return "ERROR_TYPE_USER_DENIED";
       break;
     case 3:
-      return "ERROR_PROFILE_NOT_FOUND";
+      return "ERROR_INVALID_PARTNER_KEY";
       break;
     case 4:
       return "ERROR_TYPE_UNAUTHORIZED_USER";

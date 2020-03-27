@@ -143,7 +143,9 @@ else
 #### All the errors are returned in `FlutterTruecaller.errors` stream.
 
 The errors are of FlutterTruecallerException type. They have two getters:
+
 >`errorCode` for error code.
+
 >`errorMessage` for error message.
 
 
@@ -173,6 +175,7 @@ package="YOUR_PACKAGE_NAME">
 
 Using this would ensure that the sdk works normally for API level 16 & above, and would be disabled for API level < 16 Please make sure that you put the necessary API level checks before accessing the SDK methods in case compiling for API level < 16
 
+> This plugin has AndroidX dependencies, please migrate your app to AndroidX if you haven't already. [Android's Migrating to Android X Guide](https://developer.android.com/jetpack/androidx/migrate).
 
 ## TODO
 >IOS support
