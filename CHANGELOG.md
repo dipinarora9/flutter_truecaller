@@ -1,3 +1,6 @@
+## 0.2.1
+* phoneNumber attribute returned via trueProfile stream now has a consistent format(prefixed with '+' followed by country calling code)
+
 ## 0.2.0+2
 * Fixed a typo and improved documentation
 

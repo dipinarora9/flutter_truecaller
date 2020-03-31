@@ -159,6 +159,38 @@ The errors are of FlutterTruecallerException type. They have two getters:
 - When the user is already verified on that particular device before. In this case, you will get the requestCode as `VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE`
 
 
+### Error Codes
+
+##### Some of the possible error scenerios while verifying truecaller users
+
+| Error Code | What it means                                   |
+|:-----------|:------------------------------------------------|
+| 0          | Truecaller internal error                       |
+| 1          | Network Failure                                 |
+| 2          | User pressed back                               |
+| 3          | Incorrect Partner key                           |
+| 4 & 10     | User not Verified on Truecaller*                |
+| 5          | Truecaller App Internal Error                   |
+| 11         | Truecaller not installed                        |
+| 12         | Partner Info null                               |
+| 13         | User pressed back while verification in process |
+| 14         | User pressed "SKIP/ USE ANOTHER NUMBER"         |
+
+>*Error Type 4 and Error Type 10 could arise in different conditions depending on whether the user has not registered on Truecaller app on their smartphone or if the user has deactivated their Truecaller profile at any point of time from the app.
+
+##### Handling error responses for cases of verifying non-Truecaller users
+
+
+| Error Code | What it means                 |
+|:-----------|:------------------------------|
+| 1          | Unknown Error                 |
+| 2          | Internal service error        |
+| 3          | Call createInstallation first |
+| 4          | Required permissions missing  |
+| 5          | Incomplete info               |
+| 6          | OTP timed out                 |
+| 7          | Missed call timed out         |
+
 ## NOTE
 Ensure that your Minimum SDK version is at least API level 16 or above ( Android 4.1 ). In case your android project compiles for API level below 16, you can include the following line in your AndroidManifest.xml file to avoid any compilation issues :
 

@@ -24,6 +24,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     private var channel: MethodChannel? = null
     private var activity: Activity? = null
     private var initialized: Boolean = false
+    private var mobile: String = ""
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_truecaller")
@@ -99,6 +100,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             "phone" -> {
                 try {
                     if (initialized) {
+                        this.mobile = "+91" + call.arguments.toString()
                         TruecallerSDK.getInstance().requestVerification("IN", call
                                 .arguments.toString(), getCallBack(result), (activity as FragmentActivity?)!!)
                     } else
@@ -204,7 +206,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
         val item = JSONObject()
         item.put("firstName", profile.firstName)
         item.put("lastName", profile.lastName)
-        item.put("phoneNumber", profile.phoneNumber)
+        if (profile.phoneNumber != null) {
+            if (profile.phoneNumber.startsWith("+"))
+                item.put("phoneNumber", profile.phoneNumber)
+            else item.put("phoneNumber", "+" + profile.phoneNumber)
+        } else
+            item.put("phoneNumber", this.mobile)
         item.put("gender", profile.gender)
         item.put("street", profile.street)
         item.put("city", profile.city)
