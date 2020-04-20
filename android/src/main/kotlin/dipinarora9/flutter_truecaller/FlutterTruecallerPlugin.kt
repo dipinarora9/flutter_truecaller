@@ -25,6 +25,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
     private var activity: Activity? = null
     private var initialized: Boolean = false
     private var mobile: String = ""
+    private var getProfileCalled: Boolean = true
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_truecaller")
@@ -39,7 +40,9 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
             val channel = MethodChannel(registrar.messenger(), "flutter_truecaller")
-            channel.setMethodCallHandler(FlutterTruecallerPlugin(registrar.activity()))
+            val plugin = FlutterTruecallerPlugin(registrar.activity())
+            channel.setMethodCallHandler(plugin)
+            registrar.addActivityResultListener { _, resultCode, intent -> if (plugin.initialized && plugin.getProfileCalled) TruecallerSDK.getInstance().onActivityResultObtained((registrar.activity() as FragmentActivity?)!!, resultCode, intent) else true }
         }
     }
 
@@ -89,11 +92,15 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             "getProfile" -> {
                 try {
                     if (initialized) {
+                        this.getProfileCalled = true
                         TruecallerSDK.getInstance().getUserProfile((this.activity as FragmentActivity?)!!)
                         result.success("")
-                    } else
+                    } else {
+                        this.getProfileCalled = false
                         result.error("ERROR", "Truecaller SDK not initialized", false)
+                    }
                 } catch (e: Exception) {
+                    this.getProfileCalled = false
                     result.error("FAILED", e.message, null)
                 }
             }
@@ -117,6 +124,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             // This method is invoked when either the truecaller app is installed on the device and the user gives his
             // consent to share his truecaller profile OR when the user has already been verified before on the same
             // device using the same number and hence does not need OTP to verify himself again.
+            getProfileCalled = false
             channel?.invokeMethod("callback", "User verified without OTP")
             channel?.invokeMethod("profile", trueProfileToJson(trueProfile, "User verified without OTP").toString())
             channel?.invokeMethod("verificationRequired", false)
@@ -124,6 +132,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
         override fun onFailureProfileShared(trueError: TrueError) {
             // This method is invoked when some error occurs or if an invalid request for verification is made
+            getProfileCalled = false
             channel?.invokeMethod("error", trueError.errorType.toString())
             channel?.invokeMethod("verificationRequired", false)
 //            Log.d("truecaller-testing", "onFailureProfileShared: " + trueError.errorType)
@@ -134,6 +143,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
             // continue with a different number and hence, missed call verification is required to complete the flow
             // You can initiate the missed call verification flow from within this callback method by using :
 //            Log.d("truecaller-testing", "Please call manual verification method")
+            getProfileCalled = false
             channel!!.invokeMethod("verificationRequired", true)
             channel!!.invokeMethod("callback", "Please call manual verification method")
         }
@@ -254,7 +264,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addActivityResultListener { _, resultCode, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) }
+        binding.addActivityResultListener { _, resultCode, intent -> if (this.initialized && this.getProfileCalled) TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) else true }
         channel?.setMethodCallHandler(this)
     }
 
@@ -264,7 +274,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addActivityResultListener { _, resultCode, intent -> TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) }
+        binding.addActivityResultListener { _, resultCode, intent -> if (this.initialized && this.getProfileCalled) TruecallerSDK.getInstance().onActivityResultObtained((this.activity as FragmentActivity?)!!, resultCode, intent) else true }
     }
 
 

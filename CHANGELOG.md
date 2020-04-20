@@ -1,3 +1,6 @@
+## 0.2.2
+* Fixed an issue which was causing app to crash
+
 ## 0.2.1
 * phoneNumber attribute returned via trueProfile stream now has a consistent format(prefixed with '+' followed by country calling code)
 
