@@ -1,3 +1,6 @@
+## 0.2.2+1
+* Updated readme
+
 ## 0.2.2
 * Fixed an issue which was causing app to crash
 

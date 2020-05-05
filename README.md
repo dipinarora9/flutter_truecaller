@@ -192,6 +192,9 @@ The errors are of FlutterTruecallerException type. They have two getters:
 | 7          | Missed call timed out         |
 
 ## NOTE
+
+> If you are using verification method for non-truecaller users, make sure to **DISABLE** R8 shrinker. To disable R8, pass the --no-shrink flag to flutter build apk or flutter build appbundle.
+
 Ensure that your Minimum SDK version is at least API level 16 or above ( Android 4.1 ). In case your android project compiles for API level below 16, you can include the following line in your AndroidManifest.xml file to avoid any compilation issues :
 
 ``` xml
