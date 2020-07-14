@@ -1,3 +1,6 @@
+## 0.2.2+2
+* Updated readme and example app
+
 ## 0.2.2+1
 * Updated readme
 

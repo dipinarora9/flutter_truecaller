@@ -2,7 +2,7 @@
 [Truecaller SDK](https://docs.truecaller.com/truecaller-sdk/) plugin for Flutter applications.
 
 **Note: This plugin currently supports android only.**
-## Integration
+## Steps for Plugin Integration
 
 ### 1. Generating App key and Configure signing in gradle:
 Use [this](https://flutter.dev/docs/deployment/android) link to create an configure your app for signing key. (Also configure your debug build to sign using this key). Check out the build.gradle for the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/build.gradle).
@@ -27,7 +27,26 @@ Open your AndroidManifest.xml and add a meta-data element to the application ele
 Check out the AndroidManifest.xml in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/AndroidManifest.xml).
 
 ### 3. For Truecaller Overlay
-Note that flutter_truecaller plugin requires the use of a FragmentActivity as opposed to Activity. This can be easily done by switching to use `FlutterFragmentActivity` as opposed to `FlutterActivity` in your MainActivity (or your own Activity class if you are extending the base class).
+Note that flutter_truecaller plugin requires the use of a FragmentActivity as opposed to Activity.
+
+If you receive this error: com.example.flutter_truecaller_example.mainactivity cannot be cast to androidx.fragment.app.fragmentactivity
+
+Then you need to do this step. Change FlutterActivity to FlutterFragmentActivity in MainActivity.kt.
+
+```
+package [your.package]
+
+import androidx.annotation.NonNull;
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugins.GeneratedPluginRegistrant
+
+class MainActivity: FlutterFragmentActivity() {
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
+    }
+}
+```
 
 Check out the MainActivity in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/kotlin/dipinarora9/flutter_truecaller_example/MainActivity.kt).
 
