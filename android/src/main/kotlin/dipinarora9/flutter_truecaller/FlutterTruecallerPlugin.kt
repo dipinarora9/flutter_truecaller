@@ -116,6 +116,13 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     result.error("FAILED", e.message, null)
                 }
             }
+            "verifyOTP" -> {
+                val userProfile = TrueProfile.Builder(call
+                        .argument("firstName")!!, call
+                        .argument("lastName")!!).build()
+                result.success("")
+                verifyOTP(userProfile, call.argument("otp")!!)
+            }
         }
     }
 
@@ -157,7 +164,7 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                     VerificationCallback.TYPE_MISSED_CALL_INITIATED -> {
 //                        Log.d("truecaller-testing", "drop call is successfully initiated")
                         result?.success(false)
-                        channel?.invokeMethod("callback", "drop call is successfully initiated")
+                        channel?.invokeMethod("callback", "TYPE_MISSED_CALL_INITIATED")
                     }
                     VerificationCallback.TYPE_MISSED_CALL_RECEIVED -> {
 //                        Log.d("truecaller-testing", "drop call is successfully detected")
@@ -170,12 +177,12 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                                 verifyMissedCall(userProfile)
                             }
                         }
-                        channel?.invokeMethod("callback", "drop call is successfully detected")
+                        channel?.invokeMethod("callback", "TYPE_MISSED_CALL_RECEIVED")
                     }
                     VerificationCallback.TYPE_OTP_INITIATED -> {
 //                        Log.d("truecaller-testing", "OTP is successfully triggered")
                         result?.success(true)
-                        channel?.invokeMethod("callback", "OTP is successfully triggered")
+                        channel?.invokeMethod("callback", "TYPE_OTP_INITIATED")
                     }
                     VerificationCallback.TYPE_OTP_RECEIVED -> {
 //                        Log.d("truecaller-testing", "OTP is successfully detected")
@@ -185,19 +192,18 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
                                         .argument("firstName")!!, call
                                         .argument("lastName")!!).build()
                                 result.success("")
-                                verifyOTP(userProfile, call
-                                        .argument("otp")!!)
+                                verifyOTP(userProfile, extras!!.getString(VerificationDataBundle.KEY_OTP)!!)
                             }
                         }
-                        channel?.invokeMethod("callback", "OTP is successfully detected")
+                        channel?.invokeMethod("callback", "TYPE_OTP_RECEIVED")
                     }
                     VerificationCallback.TYPE_VERIFICATION_COMPLETE -> {
                         channel?.invokeMethod("profile", trueProfileToJson(profile!!, "").toString())
-                        channel?.invokeMethod("callback", "User verified")
+                        channel?.invokeMethod("callback", "TYPE_VERIFICATION_COMPLETE")
                     }
                     VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE -> {
                         channel?.invokeMethod("profile", trueProfileToJson(extras?.profile!!, "").toString())
-                        channel?.invokeMethod("callback", "User already verified")
+                        channel?.invokeMethod("callback", "TYPE_PROFILE_VERIFIED_BEFORE")
                         result?.success(false)
                     }
                 }

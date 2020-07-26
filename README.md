@@ -170,12 +170,12 @@ The errors are of FlutterTruecallerException type. They have two getters:
 
 #### Scenerios when verifying non-truecaller users.
 
-- When drop call is successfully initiated for the input mobile number. In this case, you will get the _requestCode_ as `VerificationCallback.TYPE_MISSED_CALL_INITIATED`
-- When drop call is successfully detected on that device by the SDK present in your app. In this case, you will get the _requestCode_ as `VerificationCallback.TYPE_MISSED_CALL_RECEIVED`
-- When OTP is successfully triggered for the input mobile number. In this case, you will get the _requestCode_ as `VerificationCallback.TYPE_OTP_INITIATED`
-- When OTP is successfully detected on that device by the SDK present in your app. In this case, you will get the _requestCode_ as `VerificationCallback.TYPE_OTP_RECEIVED`
-- When the verification is successful for a particular number. In this case, you will get the requestCode as `VerificationCallback.TYPE_VERIFICATION_COMPLETE`
-- When the user is already verified on that particular device before. In this case, you will get the requestCode as `VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE`
+- When drop call is successfully initiated for the input mobile number. In this case, you will get the _callback_ as `VerificationCallback.TYPE_MISSED_CALL_INITIATED`
+- When drop call is successfully detected on that device by the SDK present in your app. In this case, you will get the _callback_ as `VerificationCallback.TYPE_MISSED_CALL_RECEIVED`
+- When OTP is successfully triggered for the input mobile number. In this case, you will get the _callback_ as `VerificationCallback.TYPE_OTP_INITIATED`
+- When OTP is successfully detected on that device by the SDK present in your app. In this case, you will get the _callback_ as `VerificationCallback.TYPE_OTP_RECEIVED`
+- When the verification is successful for a particular number. In this case, you will get the _callback_ as `VerificationCallback.TYPE_VERIFICATION_COMPLETE`
+- When the user is already verified on that particular device before. In this case, you will get the _callback_ as `VerificationCallback.TYPE_PROFILE_VERIFIED_BEFORE`
 
 
 ### Error Codes

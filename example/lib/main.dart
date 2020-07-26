@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _result = 'Unknown';
+  String _result = '';
   final FlutterTruecaller caller = FlutterTruecaller();
 
   @override
