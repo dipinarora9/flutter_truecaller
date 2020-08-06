@@ -53,16 +53,27 @@ Check out the MainActivity in the example app [here](https://github.com/dipinaro
 ### 4a. Verification flow (Supported Globally)
 
 ![Verification Flow](https://raw.githubusercontent.com/dipinarora9/flutter_truecaller/master/verification.png)
-### 4b. Verifying non-truecaller users (Currently available only for India)
+### 4b. Verifying non-truecaller users (Currently supports Indian numbers only)
 In order to verify non Truecaller users, the SDK requires the below mentioned permissions in your AndroidManifest.xml.
 
 _Check out the AndroidManifest.xml in the example app [here](https://github.com/dipinarora9/flutter_truecaller/blob/master/example/android/app/src/main/AndroidManifest.xml)._
+
+For Android 8 and above :
 ```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>  
-<uses-permission android:name="android.permission.READ_CALL_LOG"/>  
-<uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>  
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+<uses-permission android:name="android.permission.READ_CALL_LOG"/>
+<uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
 ```
-For users who don't have Truecaller app present on their smartphones, the SDK enables user verification by means of drop call, which is triggered to the user's number in background to complete the verification flow (_currently supported only for India_).
+
+For Android 7 and below :
+```xml
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+<uses-permission android:name="android.permission.READ_CALL_LOG"/>
+<uses-permission android:name="android.permission.CALL_PHONE"/>
+```
+For users who don't have Truecaller app present on their smartphones, the SDK enables user verification by means of drop call, which is triggered to the user's number in background to complete the verification flow (_currently supported only for Indian numbers only_).
+
+In case these permissions are not granted to your app by the user, the SDK would fallback to use OTP as the verification medium to complete the verification.
 
 Refer to [this](https://docs.truecaller.com/truecaller-sdk/android/user-flows-for-verification-truecaller-+-non-truecaller-users) documentation for examples.
 
@@ -81,10 +92,18 @@ final FlutterTruecaller caller = FlutterTruecaller();
 /*  
 By default this method sets these constraints while initializing  
   
-consentMode: FlutterTruecallerScope.CONSENT_MODE_BOTTOMSHEET,    
-consentTitleOptions: FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,    
-footerType: FlutterTruecallerScope.FOOTER_TYPE_SKIP,    
-sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITHOUT_OTP  
+consentMode: FlutterTruecallerScope.CONSENT_MODE_BOTTOMSHEET,
+buttonColor: Colors.blue,
+buttonTextColor: Colors.white,
+loginTextPrefix: FlutterTruecallerScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED,
+loginTextSuffix: FlutterTruecallerScope.LOGIN_TEXT_SUFFIX_PLEASE_SIGNUP,
+ctaTextPrefix: FlutterTruecallerScope.CTA_TEXT_PREFIX_USE,
+buttonShapeOptions: FlutterTruecallerScope.BUTTON_SHAPE_ROUNDED,
+privacyPolicyUrl: "",
+termsOfServiceUrl: "",
+footerType: FlutterTruecallerScope.FOOTER_TYPE_SKIP,
+consentTitleOptions: FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
+sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITHOUT_OTP
   
 These can be changed as needed by passing the optional parameters while initializing.  
 */  

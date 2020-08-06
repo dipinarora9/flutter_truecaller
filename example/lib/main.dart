@@ -33,12 +33,22 @@ class _MyAppState extends State<MyApp> {
               OutlineButton(
                 onPressed: () async {
                   String result = await caller.initializeSDK(
-                    sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITH_OTP,
-                    footerType:
-                        FlutterTruecallerScope.FOOTER_TYPE_ANOTHER_METHOD,
+                    buttonColor: Colors.black,
+                    buttonTextColor: Colors.white,
+                    loginTextPrefix:
+                        FlutterTruecallerScope.LOGIN_TEXT_PREFIX_TO_CONTINUE,
+                    loginTextSuffix: FlutterTruecallerScope
+                        .LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO,
+                    ctaTextPrefix:
+                        FlutterTruecallerScope.CTA_TEXT_PREFIX_CONTINUE_WITH,
+                    buttonShapeOptions:
+                        FlutterTruecallerScope.BUTTON_SHAPE_RECTANGLE,
+                    privacyPolicyUrl: "https://www.truecaller.com",
+                    termsOfServiceUrl: "https://www.truecaller.com",
+                    footerType: FlutterTruecallerScope.FOOTER_TYPE_LATER,
                     consentTitleOptions:
                         FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
-                    consentMode: FlutterTruecallerScope.CONSENT_MODE_POPUP,
+                    sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITH_OTP,
                   );
                   setState(() {
                     _result = result;

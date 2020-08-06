@@ -1,3 +1,6 @@
+## 0.3.0
+* Updated TruecallerSDK to the latest version (2.3.0). Added more customisation to the Truecaller profile scope.
+
 ## 0.2.3
 * Updated TruecallerSDK to the latest version. OTP is initiated only if a user denies call log permissions.
 

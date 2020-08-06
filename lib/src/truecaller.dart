@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'constants.dart';
@@ -61,13 +62,30 @@ class FlutterTruecaller {
   /// you should provide the scope value as FlutterTruecallerScope.SDK_OPTION_WITH_OTP
   Future<String> initializeSDK({
     int consentMode: FlutterTruecallerScope.CONSENT_MODE_BOTTOMSHEET,
-    int consentTitleOptions: FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
+    Color buttonColor: Colors.blue,
+    Color buttonTextColor: Colors.white,
+    int loginTextPrefix:
+        FlutterTruecallerScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED,
+    int loginTextSuffix: FlutterTruecallerScope.LOGIN_TEXT_SUFFIX_PLEASE_SIGNUP,
+    int ctaTextPrefix: FlutterTruecallerScope.CTA_TEXT_PREFIX_USE,
+    int buttonShapeOptions: FlutterTruecallerScope.BUTTON_SHAPE_ROUNDED,
+    String privacyPolicyUrl: "",
+    String termsOfServiceUrl: "",
     int footerType: FlutterTruecallerScope.FOOTER_TYPE_SKIP,
+    int consentTitleOptions: FlutterTruecallerScope.SDK_CONSENT_TITLE_VERIFY,
     int sdkOptions: FlutterTruecallerScope.SDK_OPTION_WITHOUT_OTP,
   }) async {
     try {
       final String result = await _channel.invokeMethod('initialize', {
         "consentMode": consentMode,
+        "buttonColor": buttonColor.value,
+        "buttonTextColor": buttonTextColor.value,
+        "loginTextPrefix": loginTextPrefix,
+        "loginTextSuffix": loginTextSuffix,
+        "ctaTextPrefix": ctaTextPrefix,
+        "buttonShapeOptions": buttonShapeOptions,
+        "privacyPolicyUrl": privacyPolicyUrl,
+        "termsOfServiceUrl": termsOfServiceUrl,
         "consentTitleOptions": consentTitleOptions,
         "footerType": footerType,
         "sdkOptions": sdkOptions
