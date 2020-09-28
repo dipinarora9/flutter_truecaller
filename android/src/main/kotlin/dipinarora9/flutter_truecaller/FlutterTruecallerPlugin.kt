@@ -153,14 +153,17 @@ public class FlutterTruecallerPlugin : FlutterPlugin, MethodCallHandler, Activit
 //            Log.d("truecaller-testing", "onFailureProfileShared: " + trueError.errorType)
         }
 
-        override fun onVerificationRequired() {
+        override fun onVerificationRequired(trueError: TrueError?) {
             // This method is invoked when truecaller app is not present on the device or if the user wants to
             // continue with a different number and hence, missed call verification is required to complete the flow
             // You can initiate the missed call verification flow from within this callback method by using :
 //            Log.d("truecaller-testing", "Please call manual verification method")
             getProfileCalled = false
             channel!!.invokeMethod("verificationRequired", true)
-            channel!!.invokeMethod("callback", "Please call manual verification method")
+            if (trueError != null)
+                channel!!.invokeMethod("error", trueError.errorType.toString())
+            else
+                channel!!.invokeMethod("callback", "Please call manual verification method")
         }
     }
 
